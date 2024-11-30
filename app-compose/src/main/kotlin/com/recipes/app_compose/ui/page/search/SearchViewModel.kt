@@ -64,21 +64,29 @@ class SearchViewModel @Inject constructor(
             searchQuery
                 .debounce(300L)
                 .collect { query ->
-                if (query.isBlank()) {
-                    _searchResults.update { emptyList() }
-                } else {
-                    repository.searchRecipe(query).collect { result ->
-                        if (result is Result.Success) {
-                            _searchResults.update { result.data }
-                        } else if (result is Result.Error) {
-                            _errorFlow.update { result.message }
-                        } else if (result is Result.Loading) {
-                            _isLoading.update { true }
+                    if (query.isBlank()) {
+                        _searchResults.update { emptyList() }
+                    } else {
+                        repository.searchRecipe(query).collect { result ->
+                            if (result is Result.Success) {
+                                _searchResults.update { result.data }
+                            } else if (result is Result.Error) {
+                                _errorFlow.update { result.message }
+                            } else if (result is Result.Loading) {
+                                _isLoading.update { true }
+                            }
                         }
                     }
+                    _isLoading.update { false }
                 }
-                _isLoading.update { false }
-            }
         }
+    }
+
+    fun emptySearchText() {
+        _searchQuery.update { "" }
+    }
+
+    fun removeError() {
+        _errorFlow.update { null }
     }
 }

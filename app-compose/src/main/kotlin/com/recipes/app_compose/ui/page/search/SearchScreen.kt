@@ -8,17 +8,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,6 +31,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,6 +54,7 @@ fun SearchScreen(
     val recipeList by viewModel.searchResults.collectAsState()
     val error by viewModel.errorFlow.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     LaunchedEffect(key1 = error) {
         if (!error.isNullOrBlank()) {
@@ -57,6 +64,7 @@ fun SearchScreen(
                 duration = SnackbarDuration.Indefinite
             )
         }
+        viewModel.removeError()
     }
 
     Scaffold(
@@ -75,14 +83,35 @@ fun SearchScreen(
             TextField(
                 value = searchText,
                 onValueChange = viewModel::onSearchTextChange,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp),
                 placeholder = { Text(text = "Search") },
-                trailingIcon = {
+                shape = MaterialTheme.shapes.large,
+                colors = TextFieldDefaults.colors(
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent
+                ),
+                leadingIcon = {
                     IconButton(onClick = {}) {
                         Icon(
                             imageVector = Icons.Default.Search,
                             contentDescription = "Search"
                         )
+                    }
+                },
+                trailingIcon = {
+                    IconButton(onClick = {
+                        viewModel.emptySearchText()
+                        keyboardController?.hide()
+                    }) {
+                        if (searchText.isNotEmpty()) {
+                            Icon(
+                                imageVector = Icons.Default.Clear,
+                                contentDescription = "Clear"
+                            )
+                        }
                     }
                 }
             )
@@ -109,7 +138,7 @@ fun SearchScreen(
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 2.dp)
+                            .padding(horizontal = 10.dp)
                     ) {
                         items(recipeList) {
                             SearchResultItem(
@@ -121,8 +150,10 @@ fun SearchScreen(
                                 ),
                                 onClick = { onNavigateToDetails(it.recipeId) },
                             )
+                            HorizontalDivider()
                         }
                     }
+                    keyboardController?.hide()
                 }
             }
         }
