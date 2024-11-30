@@ -33,6 +33,7 @@ class SearchRepository @Inject constructor(
             } else {
                 val responseCode = result.code()
                 val errorMessage = when (responseCode) {
+                    429 -> result.message()
                     // Client error
                     in 400..499 -> "No results for $query"
 
