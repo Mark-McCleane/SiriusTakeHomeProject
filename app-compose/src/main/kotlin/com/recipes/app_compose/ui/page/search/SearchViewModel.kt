@@ -61,6 +61,7 @@ class SearchViewModel @Inject constructor(
 
     private fun searchRecipe() {
         viewModelScope.launch {
+            _isLoading.update { true }
             searchQuery
                 .debounce(300L)
                 .collect { query ->
@@ -77,8 +78,8 @@ class SearchViewModel @Inject constructor(
                             }
                         }
                     }
-                    _isLoading.update { false }
                 }
+            _isLoading.update { false }
         }
     }
 
