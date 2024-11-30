@@ -1,0 +1,20 @@
+/*
+ * Copyright (c) 2019 Sirius XM Radio Inc., Pandora Media, LLC
+ */
+
+detekt {
+    config = files("${project.rootDir}/gradle/detekt/detekt.yml")
+    autoCorrect = true
+    parallel = true
+    buildUponDefaultConfig = true
+    input = files("${project.rootDir}/app")
+    reports {
+        xml.enabled = true
+        html.enabled = true
+        txt.enabled = false
+    }
+}
+
+dependencies {
+    detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:${libs.versions.detekt}"
+}

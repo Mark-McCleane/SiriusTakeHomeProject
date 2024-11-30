@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="recipe_image_height">250dp</dimen>
+    <dimen name="text_title_medium">18sp</dimen>
+    <dimen name="text_body_large">16sp</dimen>
+    <dimen name="text_body_medium">14sp</dimen>
+    <dimen name="recycler_loading_view_height">80dp</dimen>
+</resources>
