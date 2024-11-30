@@ -140,7 +140,7 @@ fun SearchScreen(
                             .fillMaxWidth()
                             .padding(horizontal = 10.dp)
                     ) {
-                        items(recipeList) {
+                        items(items = recipeList) {
                             SearchResultItem(
                                 SearchResultItemUiState(
                                     title = it.title,
@@ -158,10 +158,4 @@ fun SearchScreen(
             }
         }
     }
-}
-
-private object SearchScreenDefaults {
-    val VerticalPadding = 16.dp
-    val HorizontalPadding = 24.dp
-    val ErrorTopPadding = 64.dp
 }
