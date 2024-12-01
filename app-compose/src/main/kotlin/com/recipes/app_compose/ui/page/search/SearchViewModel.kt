@@ -24,10 +24,6 @@ import javax.inject.Inject
 class SearchViewModel @Inject constructor(
     private val repository: SearchRepository,
 ) : ViewModel() {
-    // TODO #1: Implement the search screen's ViewModel. The screen should show a blank
-    //  page when the query is empty, a loading widget while the page is loading, and a list of
-    //  results when the repository returns data. See the screenshots in /screenshots.#
-
     private val _searchQuery = MutableStateFlow("")
     val searchQuery = _searchQuery.asStateFlow()
 

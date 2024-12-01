@@ -50,8 +50,6 @@ fun DetailsScreen(
     onBackPressed: () -> Unit,
     viewModel: DetailsViewModel = hiltViewModel(),
 ) {
-    // TODO #4: Implement the Details screen as seen in [screenshots/compose_details.png]
-
     val recipe by viewModel.recipe.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.errorFlow.collectAsState()
@@ -153,7 +151,9 @@ fun DetailsScreen(
                                 vertical = IngredientVerticalPadding
                             )
                     ) {
-                        items(items = recipe!!.ingredients!!) {
+                        items(
+                            items = recipe!!.ingredients!!
+                        ) {
                             Text(it)
                         }
                     }

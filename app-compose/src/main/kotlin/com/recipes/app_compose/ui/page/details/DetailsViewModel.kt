@@ -43,19 +43,19 @@ class DetailsViewModel @Inject constructor(
                 when (result) {
                     is Result.Success -> {
                         _recipe.update { result.data }
+                        _isLoading.update { false }
                     }
 
                     is Result.Error -> {
                         _errorFlow.update { result.message }
+                        _isLoading.update { false }
                     }
 
                     is Result.Loading -> {
-                        delay(1000L)
+//                        delay(1000L) // simulate network delay
                         _isLoading.update { true }
                     }
                 }
-
-                _isLoading.update { false }
             }
         }
     }
@@ -63,7 +63,4 @@ class DetailsViewModel @Inject constructor(
     fun removeError() {
         _errorFlow.update { null }
     }
-
-
-    // TODO #3: Implement a ViewModel for the details screen, using the detailsRepository
 }

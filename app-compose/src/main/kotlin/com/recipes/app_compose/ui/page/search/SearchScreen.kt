@@ -46,9 +46,6 @@ fun SearchScreen(
     onNavigateToDetails: (itemId: String) -> Unit,
     viewModel: SearchViewModel = hiltViewModel(),
 ) {
-    // TODO #2: Display a search bar and a list of results.
-    //  See [screenshots/compose_search_results.png]
-
     val searchText by viewModel.searchQuery.collectAsState()
     val isSearching by viewModel.isLoading.collectAsState()
     val recipeList by viewModel.searchResults.collectAsState()
@@ -140,7 +137,10 @@ fun SearchScreen(
                             .fillMaxWidth()
                             .padding(horizontal = 10.dp)
                     ) {
-                        items(items = recipeList) {
+                        items(
+                            items = recipeList,
+                            key = { it.recipeId }
+                        ) {
                             SearchResultItem(
                                 SearchResultItemUiState(
                                     title = it.title,
