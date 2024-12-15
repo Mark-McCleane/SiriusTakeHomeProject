@@ -9,7 +9,6 @@ import com.recipes.recipesdk.models.Recipe
 import com.recipes.recipesdk.models.Result
 import com.recipes.recipesdk.repository.DetailsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -32,11 +31,7 @@ class DetailsViewModel @Inject constructor(
     private val _errorFlow = MutableStateFlow<String?>(null)
     val errorFlow = _errorFlow.asStateFlow()
 
-    init {
-        getRecipe()
-    }
-
-    private fun getRecipe() {
+    fun getRecipe() {
         viewModelScope.launch {
             _isLoading.update { true }
             repository.getRecipe(recipeId).collect { result ->

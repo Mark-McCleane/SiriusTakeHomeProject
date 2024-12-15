@@ -55,7 +55,7 @@ fun DetailsScreen(
     val error by viewModel.errorFlow.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect (key1 = error){
+    LaunchedEffect(key1 = error) {
         if (!error.isNullOrBlank()) {
             snackbarHostState.showSnackbar(
                 message = error!!,
@@ -66,6 +66,10 @@ fun DetailsScreen(
         viewModel.removeError()
     }
 
+    LaunchedEffect(Unit) {
+        viewModel.getRecipe()
+    }
+
     if (isLoading) {
         Box(modifier = Modifier.fillMaxSize()) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -74,10 +78,11 @@ fun DetailsScreen(
         Scaffold(
             topBar = {
                 TopAppBar(title = {
-                    Text(recipe?.title ?: "",
+                    Text(
+                        recipe?.title ?: "",
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
-                        )
+                    )
                 },
                     navigationIcon = {
                         IconButton(onClick = onBackPressed) {
@@ -92,8 +97,10 @@ fun DetailsScreen(
             snackbarHost = {
                 SnackbarHost(hostState = snackbarHostState)
             }
-            ) { innerPadding ->
-            Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+        ) { innerPadding ->
+            Column(modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)) {
                 Image(
                     imageUrl = recipe?.imageUrl ?: "",
                     contentDescription = "Recipe Image",

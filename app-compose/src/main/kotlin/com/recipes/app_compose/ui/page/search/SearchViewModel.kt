@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onEach
@@ -48,17 +47,13 @@ class SearchViewModel @Inject constructor(
             _searchResults.value
         )
 
-    init {
-        searchRecipe()
-    }
-
     fun onSearchTextChange(text: String) {
         _searchQuery.value = text
         searchRecipe()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private fun searchRecipe() {
+    fun searchRecipe() {
         viewModelScope.launch {
             _isLoading.update { true }
             searchQuery
