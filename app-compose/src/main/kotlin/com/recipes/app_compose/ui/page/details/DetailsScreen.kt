@@ -93,7 +93,7 @@ fun DetailsScreen(
                 SnackbarHost(hostState = snackbarHostState)
             }
             ) { innerPadding ->
-            Column(modifier = Modifier.fillMaxSize()) {
+            Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
                 Image(
                     imageUrl = recipe?.imageUrl ?: "",
                     contentDescription = "Recipe Image",
@@ -161,7 +161,6 @@ fun DetailsScreen(
             }
         }
     }
-
 }
 
 private object DetailsScreenDefaults {

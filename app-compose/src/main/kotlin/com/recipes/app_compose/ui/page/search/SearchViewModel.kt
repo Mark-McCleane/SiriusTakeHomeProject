@@ -6,6 +6,7 @@ import com.recipes.recipesdk.models.Recipe
 import com.recipes.recipesdk.models.Result
 import com.recipes.recipesdk.repository.SearchRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -13,6 +14,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -35,7 +38,6 @@ class SearchViewModel @Inject constructor(
 
     private val _searchResults = MutableStateFlow<List<Recipe>>(emptyList())
     val searchResults: StateFlow<List<Recipe>> = searchQuery
-        .debounce(1_000L)
         .onEach { _isLoading.update { true } }
         .combine(_searchResults) { text, recipe ->
             recipe
@@ -55,29 +57,42 @@ class SearchViewModel @Inject constructor(
         searchRecipe()
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun searchRecipe() {
         viewModelScope.launch {
             _isLoading.update { true }
             searchQuery
-                .debounce(300L)
-                .collect { query ->
-                    if (query.isBlank()) {
-                        _searchResults.update { emptyList() }
+                .flatMapLatest {
+                    if (it.isBlank()) {
+                        flowOf(Result.Success(emptyList<Recipe>()))
                     } else {
-                        repository.searchRecipe(query).collect { result ->
-                            if (result is Result.Success) {
-                                _searchResults.update { result.data }
-                            } else if (result is Result.Error) {
-                                _errorFlow.update { result.message }
-                            } else if (result is Result.Loading) {
-                                _isLoading.update { true }
-                            }
+                        repository.searchRecipe(it)
+                    }
+                }
+                .collect { result ->
+                    when (result) {
+                        is Result.Success -> {
+                            _searchResults.update { result.data }
+                            _isLoading.update { false }
+                            removeError()
+                        }
+
+                        is Result.Error -> {
+                            _errorFlow.update { result.message }
+                            _isLoading.update { false }
+                            _searchResults.update { emptyList() }
+                        }
+
+                        is Result.Loading -> {
+                            _isLoading.update { true }
+                            removeError()
                         }
                     }
                 }
-            _isLoading.update { false }
         }
     }
+
+//flatMapLatest
 
     fun emptySearchText() {
         _searchQuery.update { "" }
